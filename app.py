@@ -2,7 +2,7 @@ from langchain import PromptTemplate, LLMChain
 from aimemberllm import AimemberLLM
 
 # 커스텀 LLM 인스턴스 생성
-llm = AimemberLLM()
+llm = AimemberLLM(endpoint="/lottegpt")
 
 # 프롬프트 템플릿 설정
 prompt = PromptTemplate(

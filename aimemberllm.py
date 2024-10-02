@@ -44,7 +44,7 @@ class AimemberLLM(LLM):
             }
 
         response = requests.post(
-            self.api_baseurl + endpoint, 
+            self.api_baseurl + self.endpoint, 
             json=payload, 
             headers=headers
         )

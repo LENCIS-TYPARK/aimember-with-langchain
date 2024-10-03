@@ -51,8 +51,14 @@ class AimemberLLM(LLM):
         return text
 
     def _create_payload(self, prompt: str) -> dict:
+        """
+        prompt: str
+
+        Create payload from the prompt JSON.
+        """
+
         payload = json.loads(prompt)
-        if self.endpoint == "/lottegpt":
+        if self.endpoint in ["/lottegpt", "/chatgpt"]:
             return {
                 "query": payload.get("query", ""),
                 "history": payload.get("history", "")
@@ -66,21 +72,12 @@ class AimemberLLM(LLM):
             return {
                 "document": payload.get("document", "")
             }
-        elif self.endpoint == "/chatgpt":
-            return {
-                "query": payload.get("query", ""),
-                "history": payload.get("history", "")
-            }
-        elif self.endpoint == "/gemini/nostream" or self.endpoint == "/gemini/claude":
-            return {
-                "query": payload.get("query", "")
-            }
         elif self.endpoint == "/recommendation":
             return {
                 "question": payload.get("question", ""),
                 "answer": payload.get("answer", "")
             }
-        elif self.endpoint in ["/codegenerate", "/wordner", "/worddetector"]:
+        elif self.endpoint in ["/gemini/nostream", "/gemini/claude", "/codegenerate", "/wordner", "/worddetector"]:
             return {
                 "query": payload.get("query", "")
             }

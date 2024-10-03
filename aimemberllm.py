@@ -32,16 +32,7 @@ class AimemberLLM(LLM):
             "Content-Type": "application/json"
         }
 
-        if self.endpoint == "/lottegpt":
-            payload = {
-                "query": prompt,
-                "history": ''
-            }
-        else:
-            payload = {
-                "query": prompt,
-                "history": ''
-            }
+        payload = self._create_payload(prompt)
 
         response = requests.post(
             self.api_baseurl + self.endpoint, 
@@ -51,13 +42,59 @@ class AimemberLLM(LLM):
 
         response.raise_for_status()
         data = json.loads(response.json())
-        text = data.get('message','Internal Server Error ' + str(data.get('status_code','900')))
+        text = data.get('message', 'Internal Server Error ' + str(data.get('status_code','900')))
 
         if stop:
             for stop_token in stop:
                 text = text.split(stop_token)[0]
 
         return text
+
+    def _create_payload(self, prompt: str) -> dict:
+        payload = json.loads(prompt)
+        if self.endpoint == "/lottegpt":
+            return {
+                "query": payload.get("query", ""),
+                "history": payload.get("history", "")
+            }
+        elif self.endpoint == "/lottegpt/search":
+            return {
+                "query": payload.get("query", ""),
+                "search_resource": payload.get("search_resource", {})
+            }
+        elif self.endpoint == "/summarization":
+            return {
+                "document": payload.get("document", "")
+            }
+        elif self.endpoint == "/chatgpt":
+            return {
+                "query": payload.get("query", ""),
+                "history": payload.get("history", "")
+            }
+        elif self.endpoint == "/gemini/nostream" or self.endpoint == "/gemini/claude":
+            return {
+                "query": payload.get("query", "")
+            }
+        elif self.endpoint == "/recommendation":
+            return {
+                "question": payload.get("question", ""),
+                "answer": payload.get("answer", "")
+            }
+        elif self.endpoint in ["/codegenerate", "/wordner", "/worddetector"]:
+            return {
+                "query": payload.get("query", "")
+            }
+        elif self.endpoint == "/translate":
+            return {
+                "doc": payload.get("doc", ""),
+                "src_lang": payload.get("src_lang", ""),
+                "tgt_lang": payload.get("tgt_lang", "")
+            }
+        else:
+            return {
+                "query": payload.get("query", ""),
+                "history": payload.get("history", "")
+            }
 
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
